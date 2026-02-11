@@ -1,0 +1,58 @@
+export const mockCustomers = [
+  {
+    id: 1,
+    name: 'John Smith',
+    email: 'john.smith@email.com',
+    phone: '+1 (555) 123-4567',
+    orders: 5,
+  },
+  {
+    id: 2,
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@email.com',
+    phone: '+1 (555) 234-5678',
+    orders: 3,
+  },
+  {
+    id: 3,
+    name: 'Michael Brown',
+    email: 'michael.brown@email.com',
+    phone: '+1 (555) 345-6789',
+    orders: 8,
+  },
+  {
+    id: 4,
+    name: 'Emily Davis',
+    email: 'emily.davis@email.com',
+    phone: '+1 (555) 456-7890',
+    orders: 2,
+  },
+  {
+    id: 5,
+    name: 'David Wilson',
+    email: 'david.wilson@email.com',
+    phone: '+1 (555) 567-8901',
+    orders: 12,
+  },
+  {
+    id: 6,
+    name: 'Lisa Anderson',
+    email: 'lisa.anderson@email.com',
+    phone: '+1 (555) 678-9012',
+    orders: 4,
+  },
+  {
+    id: 7,
+    name: 'Robert Taylor',
+    email: 'robert.taylor@email.com',
+    phone: '+1 (555) 789-0123',
+    orders: 7,
+  },
+  {
+    id: 8,
+    name: 'Jennifer Martinez',
+    email: 'jennifer.martinez@email.com',
+    phone: '+1 (555) 890-1234',
+    orders: 9,
+  },
+]
