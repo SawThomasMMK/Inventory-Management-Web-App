@@ -22,26 +22,46 @@
           :headers="tableHeaders"
           :data="products"
           :loading="loading"
-        />
+        >
+          <template #cell-image="{ value }">
+            <img
+              :src="value"
+              :alt="'Product image'"
+              class="w-16 h-16 object-cover rounded"
+            />
+          </template>
+          <template #cell-price="{ value }">
+            ${{ value.toFixed(2) }}
+          </template>
+        </Table>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Button from '@/components/common/Button.vue'
 import Input from '@/components/common/Input.vue'
 import Table from '@/components/common/Table.vue'
+import { mockProducts } from '@/constants/mockProducts.js'
 
 const searchQuery = ref('')
 const loading = ref(false)
 const products = ref([])
 
+onMounted(() => {
+  products.value = mockProducts.map(product => ({
+    ...product,
+    image: product.image_url,
+  }))
+})
+
 const tableHeaders = [
+  { key: 'image', label: 'Image' },
   { key: 'name', label: 'Product Name' },
-  { key: 'sku', label: 'SKU' },
-  { key: 'stock', label: 'Stock' },
+  { key: 'description', label: 'Description' },
+  { key: 'quantity', label: 'Quantity' },
   { key: 'price', label: 'Price' },
   { key: 'actions', label: 'Actions' },
 ]
