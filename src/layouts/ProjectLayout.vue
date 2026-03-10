@@ -47,6 +47,7 @@
   
           <button
             class="text-sm text-red-600 hover:underline"
+            @click="logout"
           >
             Logout
           </button>
@@ -59,4 +60,38 @@
       </div>
     </div>
   </template>
+
+  <script setup>
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+
+  const API_BASE_URL = (import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1').replace(
+    /\/$/,
+    '',
+  )
+
+  const logout = async () => {
+    const token = localStorage.getItem('token')
+
+    // Best-effort API logout; ignore failures
+    if (token) {
+      try {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      } catch {
+        // ignore network / API errors on logout
+      }
+    }
+
+    localStorage.removeItem('token')
+    router.push('/login')
+  }
+  </script>
   

@@ -2,9 +2,7 @@
   <div>
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">Customers</h2>
-      <Button @click="handleAddCustomer" variant="primary">
-        Add Customer
-      </Button>
+      <Button @click="handleAddCustomer" variant="primary"> Add Customer </Button>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -18,11 +16,7 @@
           />
         </div>
 
-        <Table
-          :headers="tableHeaders"
-          :data="customers"
-          :loading="loading"
-        />
+        <Table :headers="tableHeaders" :data="customers" :loading="loading" />
       </div>
     </div>
   </div>
@@ -30,9 +24,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import Button from '@/components/common/Button.vue'
-import Input from '@/components/common/Input.vue'
-import Table from '@/components/common/Table.vue'
+import Button from '@/components/Button.vue'
+import Input from '@/components/Input.vue'
+import Table from '@/components/Table.vue'
 
 const searchQuery = ref('')
 const loading = ref(false)

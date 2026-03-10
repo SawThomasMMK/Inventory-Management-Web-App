@@ -3,9 +3,11 @@
 This document helps you build the frontend against the Laravel API.
 
 Base URL (local):
+
 - `http://127.0.0.1:8000/api/v1`
 
 Health check:
+
 - `GET http://127.0.0.1:8000/up`
 
 ## Authentication
@@ -13,12 +15,14 @@ Health check:
 Auth is required for all `/api/v1` endpoints except login/register.
 
 Endpoints:
+
 - `POST /auth/register`
 - `POST /auth/login`
 - `POST /auth/logout`
 - `GET /auth/me`
 
 Login example:
+
 ```json
 {
   "email": "test@example.com",
@@ -27,11 +31,13 @@ Login example:
 ```
 
 Auth header (for protected routes):
+
 - `Authorization: Bearer <access_token>`
 
 ## Data model overview
 
 Entities:
+
 - Product
 - Order
 - Customer
@@ -40,6 +46,7 @@ Entities:
 - History Entry
 
 Relations:
+
 - Customer has many Orders.
 - Customer has many History Entries.
 - Employee can lead Service Teams.
@@ -50,10 +57,13 @@ Relations:
 ## Core lists and pages
 
 ### Admin dashboard
+
 Endpoint:
+
 - `GET /dashboard/stats`
 
 Example response:
+
 ```json
 {
   "total_sales": "1448.49",
@@ -68,9 +78,7 @@ Example response:
     { "date": "2026-02-01", "total_sales": 199.5 },
     { "date": "2026-02-05", "total_sales": 899.99 }
   ],
-  "top_products": [
-    { "id": 1, "name": "Smart TV 55\"", "total_revenue": 899.99 }
-  ],
+  "top_products": [{ "id": 1, "name": "Smart TV 55\"", "total_revenue": 899.99 }],
   "recent_activity": [
     {
       "order_number": "ORD-ABC123",
@@ -83,6 +91,7 @@ Example response:
 ```
 
 Suggested dashboard cards:
+
 - Total sales
 - Total orders
 - Total customers
@@ -90,7 +99,9 @@ Suggested dashboard cards:
 - Orders by status chart
 
 ### Products page
+
 Endpoints:
+
 - `GET /products`
 - `POST /products`
 - `GET /products/{id}`
@@ -98,9 +109,11 @@ Endpoints:
 - `DELETE /products/{id}`
 
 Fields:
+
 - `id`, `name`, `description`, `image_url`, `quantity`, `price`
 
 Create example:
+
 ```json
 {
   "name": "Smart TV 55\"",
@@ -112,7 +125,9 @@ Create example:
 ```
 
 ### Orders page
+
 Endpoints:
+
 - `GET /orders`
 - `POST /orders`
 - `GET /orders/{id}`
@@ -120,6 +135,7 @@ Endpoints:
 - `DELETE /orders/{id}`
 
 Fields:
+
 - `order_number` (string, unique)
 - `customer_id` (required)
 - `status` (enum: `processing`, `completed`, `cancelled`)
@@ -133,6 +149,7 @@ Fields:
 - `notes` (string)
 
 Create example:
+
 ```json
 {
   "order_number": "ORD-TEST-001",
@@ -150,6 +167,7 @@ Create example:
 ```
 
 Service status meaning:
+
 - `not_required`: no installation/service requested
 - `pending`: requested but not assigned
 - `assigned`: team assigned, not yet on the field
@@ -157,7 +175,9 @@ Service status meaning:
 - `completed`: service completed
 
 ### Customers page
+
 Endpoints:
+
 - `GET /customers`
 - `POST /customers`
 - `GET /customers/{id}`
@@ -165,16 +185,20 @@ Endpoints:
 - `DELETE /customers/{id}`
 
 Fields:
+
 - `name`, `email`, `phone`, `address`
 
 Response includes:
+
 - `latest_service_status` (from most recent order)
 - `total_orders`
 - `last_order` (summary of most recent order)
 - `orders` (when loaded by API)
 
 ### Service Team page
+
 Endpoints:
+
 - `GET /service-teams`
 - `POST /service-teams`
 - `GET /service-teams/{id}`
@@ -182,11 +206,13 @@ Endpoints:
 - `DELETE /service-teams/{id}`
 
 Fields:
+
 - `name`
 - `leader_employee_id` (nullable)
 - `member_ids` (array of employee IDs)
 
 Create example:
+
 ```json
 {
   "name": "North Team",
@@ -196,7 +222,9 @@ Create example:
 ```
 
 ### Employees page
+
 Endpoints:
+
 - `GET /employees`
 - `POST /employees`
 - `GET /employees/{id}`
@@ -204,22 +232,28 @@ Endpoints:
 - `DELETE /employees/{id}`
 
 Fields:
+
 - `first_name`, `last_name`, `email`, `phone`, `job_title`, `address`, `hired_at`, `is_active`
 
 Employee detail popup:
+
 - Use `GET /employees/{id}` to fetch full profile for modal.
 
 ### History page
+
 Endpoints:
+
 - `GET /history`
 - `POST /history`
 - `GET /history/{id}`
 
 Fields:
+
 - `order_id`, `customer_id`, `service_team_id`, `handled_by_employee_id`
 - `service_date`, `address`, `customer_name`, `order_number`, `product`, `status`, `amount`
 
 Create example:
+
 ```json
 {
   "order_id": 1,
@@ -238,6 +272,7 @@ Create example:
 
 All list endpoints return arrays in a `data` key because Laravel API Resources are used.
 Example:
+
 ```json
 {
   "data": [

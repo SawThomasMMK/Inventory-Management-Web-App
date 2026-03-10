@@ -1,20 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProjectLayout from '@/layouts/ProjectLayout.vue'
 import Dashboard from '@/pages/Dashboard.vue'
-import Products from '@/pages/Products/index.vue'
-import Orders from '@/pages/Orders/index.vue'
-import Customers from '@/pages/Customers/index.vue'
+import Products from '@/pages/Products.vue'
+import Orders from '@/pages/Orders.vue'
+import Customers from '@/pages/Customers.vue'
+import Login from '@/pages/Login.vue'
+import Register from '@/pages/Register.vue'
 
 export default createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
+    },
+    {
+      path: '/register',
+      component: Register
+    },
     {
       path: '/',
       component: ProjectLayout,
       children: [
         {
           path: '',
-          redirect: '/dashboard',
+          redirect: '/login',
         },
         {
           path: 'dashboard',
