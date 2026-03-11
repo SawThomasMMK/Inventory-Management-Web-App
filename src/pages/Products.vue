@@ -1,20 +1,13 @@
 <template>
   <div>
-
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">Products</h2>
 
-      <Button
-        @click="handleAddProduct"
-        variant="primary"
-      >
-        Add Product
-      </Button>
+      <Button @click="handleAddProduct" variant="primary"> Add Product </Button>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="p-6">
-
         <div class="mb-4">
           <Input
             v-model="searchQuery"
@@ -24,29 +17,15 @@
           />
         </div>
 
-        <Table
-          :headers="tableHeaders"
-          :data="products"
-          :loading="loading"
-        >
-
+        <Table :headers="tableHeaders" :data="products" :loading="loading">
           <template #cell-image="{ value }">
-            <img
-              :src="value"
-              :alt="'Product image'"
-              class="w-16 h-16 object-cover rounded"
-            />
+            <img :src="value" :alt="'Product image'" class="w-20 h-20 object-cover rounded" />
           </template>
 
-          <template #cell-price="{ value }">
-            ${{ value.toFixed(2) }}
-          </template>
-
+          <template #cell-price="{ value }"> ${{ Number(value).toFixed(2) }} </template>
         </Table>
-
       </div>
     </div>
-
   </div>
 </template>
 
@@ -57,17 +36,44 @@ import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import Table from '@/components/Table.vue'
 
-import { mockProducts } from '@/constants/mockProducts.js'
-
 const searchQuery = ref('')
 const loading = ref(false)
 const products = ref([])
 
+const API_BASE_URL = (import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1').replace(
+  /\/$/,
+  '',
+)
+
+const loadProducts = async () => {
+  loading.value = true
+
+  try {
+    const token = localStorage.getItem('token')
+
+    const response = await fetch(`${API_BASE_URL}/products`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+
+    products.value = data.data.map((product) => ({
+      ...product,
+      image: product.image_url,
+    }))
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+    console.log('Loading finished:', loading.value)
+  }
+}
+
 onMounted(() => {
-  products.value = mockProducts.map((product) => ({
-    ...product,
-    image: product.image_url,
-  }))
+  loadProducts()
 })
 
 const tableHeaders = [
@@ -85,5 +91,4 @@ const handleAddProduct = () => {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
