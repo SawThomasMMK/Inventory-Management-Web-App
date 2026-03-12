@@ -1,40 +1,25 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      
-      <div
-        v-if="isOpen"
-        class="fixed inset-0 z-50 overflow-y-auto"
-        @click.self="handleClose"
-      >
-        <div
-          class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0"
-        >
-          
+      <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" @click.self="handleClose">
+        <div class="flex items-center justify-center min-h-screen px-4">
           <!-- Background -->
           <div
             class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
             @click="handleClose"
           />
 
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen">
-            &#8203;
-          </span>
+          <!-- <span class="hidden sm:inline-block sm:align-middle sm:h-screen"> &#8203; </span> -->
 
           <!-- Modal -->
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+            class="relative mx-auto bg-white rounded-lg shadow-xl max-w-lg w-full p-6"
             @click.stop
           >
-
             <!-- Header -->
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="flex items-start justify-between mb-4">
-
-                <h3
-                  v-if="title"
-                  class="text-lg font-medium text-gray-900"
-                >
+                <h3 v-if="title" class="text-lg font-medium text-gray-900">
                   {{ title }}
                 </h3>
 
@@ -45,12 +30,7 @@
                 >
                   <span class="sr-only">Close</span>
 
-                  <svg
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -58,7 +38,6 @@
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-
                 </button>
               </div>
 
@@ -68,17 +47,12 @@
             </div>
 
             <!-- Footer -->
-            <div
-              v-if="$slots.footer"
-              class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse"
-            >
+            <div v-if="$slots.footer" class="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <slot name="footer" />
             </div>
-
           </div>
         </div>
       </div>
-
     </Transition>
   </Teleport>
 </template>
