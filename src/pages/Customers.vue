@@ -3,21 +3,28 @@
     <!-- Page Header -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">Customers</h2>
-
-      <Button @click="handleAddCustomer" variant="primary"> Add Customer </Button>
     </div>
 
     <!-- Table Card -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div class="p-6">
+    <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+      <div class="pt-6">
         <!-- Search -->
-        <div class="mb-4">
+        <div class="flex items-center justify-between mb-4 mx-6 gap-4">
           <Input
             v-model="searchQuery"
             placeholder="Search customers..."
             type="text"
-            class="w-full"
+            class="w-full max-w-80"
           />
+
+          <!-- Add Button -->
+          <Button
+            @click="handleAddCustomer"
+            variant="primary"
+            class="w-auto flex items-center whitespace-nowrap"
+          >
+            <PlusIcon class="w-5 h-5 mr-2" />Add Customer</Button
+          >
         </div>
 
         <!-- Table -->
@@ -88,7 +95,7 @@ import Input from '@/components/Input.vue'
 import Table from '@/components/Table.vue'
 import Modal from '@/components/Modal.vue'
 import ConfirmDelete from '@/components/ConfirmDelete.vue'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { PencilSquareIcon, TrashIcon, PlusIcon } from '@heroicons/vue/24/outline'
 
 // Reactive state
 

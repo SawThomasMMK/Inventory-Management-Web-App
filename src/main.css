@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* Hide scrollbar but allow scroll */
-::-webkit-scrollbar {
+::-webkit-scrollbar:vertical {
   width: 0px;
   background: transparent;
 }

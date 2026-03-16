@@ -1,12 +1,12 @@
 <template>
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
+      <thead class="bg-gray-100">
         <tr>
           <th
             v-for="header in headers"
             :key="header.key"
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            class="px-6 py-3 text-left text-sm font-bold text-black tracking-wider"
           >
             {{ header.label }}
           </th>
@@ -28,11 +28,7 @@
 
         <!-- Data -->
         <tr v-else v-for="(row, rowIndex) in data" :key="rowIndex" class="hover:bg-gray-50">
-          <td
-            v-for="header in headers"
-            :key="header.key"
-            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-          >
+          <td v-for="header in headers" :key="header.key" class="px-6 py-4 text-sm text-gray-900">
             <slot :name="`cell-${header.key}`" :row="row" :value="row[header.key]">
               {{ row[header.key] }}
             </slot>

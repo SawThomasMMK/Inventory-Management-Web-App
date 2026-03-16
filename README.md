@@ -19,6 +19,7 @@ Install Heroicons (required by `Login.vue` / `Register.vue`):
 
 ```sh
 npm install @heroicons/vue
+npm install chart.js vue-chartjs
 ```
 
 ## Environment variables
