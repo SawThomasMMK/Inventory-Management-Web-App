@@ -4,8 +4,10 @@ import Dashboard from '@/pages/Dashboard.vue'
 import Products from '@/pages/Products.vue'
 import Orders from '@/pages/Orders.vue'
 import Customers from '@/pages/Customers.vue'
+import Employees from '@/pages/Employees.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
+import ServiceTeams from '@/pages/ServiceTeams.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -17,7 +19,7 @@ export default createRouter({
     },
     {
       path: '/register',
-      component: Register
+      component: Register,
     },
     {
       path: '/',
@@ -46,6 +48,16 @@ export default createRouter({
           path: 'customers',
           name: 'Customers',
           component: Customers,
+        },
+        {
+          path: 'employees',
+          name: 'Employees',
+          component: Employees,
+        },
+        {
+          path: 'service-teams',
+          name: 'ServiceTeams',
+          component: ServiceTeams,
         },
       ],
     },

@@ -100,9 +100,7 @@
 </template>
 
 <script setup>
-/* =============================
-   Imports
-============================= */
+// Imports
 
 import { ref, onMounted } from 'vue'
 
@@ -113,9 +111,7 @@ import Modal from '@/components/Modal.vue'
 import ConfirmDelete from '@/components/ConfirmDelete.vue'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
-/* =============================
-   State
-============================= */
+// Reactive state
 
 const searchQuery = ref('')
 const loading = ref(false)
@@ -128,9 +124,7 @@ const editingProduct = ref(null)
 const showDeleteModal = ref(false)
 const productToDelete = ref(null)
 
-/* =============================
-   Form
-============================= */
+// Form model
 
 const form = ref({
   name: '',
@@ -140,18 +134,14 @@ const form = ref({
   price: 0,
 })
 
-/* =============================
-   API Base
-============================= */
+// API base URL
 
 const API_BASE_URL = (import.meta.env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1').replace(
   /\/$/,
   '',
 )
 
-/* =============================
-   Load Products
-============================= */
+// Load Products
 
 const loadProducts = async () => {
   loading.value = true
@@ -179,9 +169,7 @@ const loadProducts = async () => {
   }
 }
 
-/* =============================
-   Create / Update Product
-============================= */
+// Create / Update Product
 
 const saveProduct = async () => {
   try {
@@ -217,9 +205,7 @@ const saveProduct = async () => {
   }
 }
 
-/* =============================
-   Edit Product
-============================= */
+// Edit Product
 
 const editProduct = (product) => {
   editingProduct.value = product
@@ -235,14 +221,14 @@ const editProduct = (product) => {
   showModal.value = true
 }
 
-/* =============================
-   Delete Product
-============================= */
+// Delete product
 
 const deleteProduct = (product) => {
   productToDelete.value = product
   showDeleteModal.value = true
 }
+
+// Confirm delete
 
 const confirmDelete = async () => {
   try {
@@ -263,9 +249,7 @@ const confirmDelete = async () => {
   }
 }
 
-/* =============================
-   Table Headers
-============================= */
+// Table headers
 
 const tableHeaders = [
   { key: 'image', label: 'Image' },
@@ -276,9 +260,7 @@ const tableHeaders = [
   { key: 'actions', label: 'Actions' },
 ]
 
-/* =============================
-   Add Product
-============================= */
+// Add product
 
 const handleAddProduct = () => {
   editingProduct.value = null
@@ -294,9 +276,7 @@ const handleAddProduct = () => {
   showModal.value = true
 }
 
-/* =============================
-   Lifecycle
-============================= */
+// Lifecycle
 
 onMounted(() => {
   loadProducts()
