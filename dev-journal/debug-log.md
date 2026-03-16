@@ -61,3 +61,21 @@ State-driven UI components such as modals should exist once at the page level ra
 
 **Code:**  
 → [View Snippet](snippets/modal-placement-fix.md)
+
+## 2026-03-12 — Service Team Leader Indicator and Member Ordering
+
+**Problem:**  
+The Service Teams page needed to visually indicate the team leader and ensure the leader always appears at the top of the member list. Additionally, editing a member’s position from the Service Team page was not updating the employee record.
+
+**Fix:**  
+Used a Heroicons StarIcon to mark the leader by comparing member.id with team.leader.id. Sorted the members array during rendering so the leader appears first. Fixed the edit modal bindings so the position field correctly updates job_title through the PUT /employees/{id} endpoint.
+
+**Lesson:**
+UI indicators should rely on the API response structure rather than assumed fields. When editing shared data across pages, ensure form bindings match the fields used in the update request.
+
+**Code:**
+See snippet → snippets/service-team-leader-ui.md
+
+Scratch:
+We cant set someone as a teamleader if there is already a leader.
+Team leader selection and changes
