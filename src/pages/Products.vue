@@ -1,8 +1,9 @@
 <template>
   <div>
     <!-- Page Header -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="pb-6">
       <h2 class="text-2xl font-bold">Products</h2>
+      <p class="text-gray-500 text-sm py-1">Manage your inventory and product catalog</p>
     </div>
 
     <!-- Table Card -->

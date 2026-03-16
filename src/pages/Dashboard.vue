@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+    <div class="pb-6">
+      <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+      <p class="text-gray-500 text-sm py-1">Overview of your inventory and sales performance</p>
+    </div>
 
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

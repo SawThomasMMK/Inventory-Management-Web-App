@@ -32,6 +32,11 @@
           <span>Customers</span>
         </RouterLink>
 
+        <RouterLink to="/employees" class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
+          <UserIcon class="h-5 w-5 mr-2 shrink-0" />
+          <span>Employees</span>
+        </RouterLink>
+
         <RouterLink
           to="/service-teams"
           class="flex items-center px-4 py-2 rounded hover:bg-gray-200"
@@ -40,9 +45,9 @@
           <span>Service Teams</span>
         </RouterLink>
 
-        <RouterLink to="/employees" class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
-          <UserIcon class="h-5 w-5 mr-2 shrink-0" />
-          <span>Employees</span>
+        <RouterLink to="/history" class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
+          <ClockIcon class="h-5 w-5 mr-2 shrink-0" />
+          <span>History</span>
         </RouterLink>
 
         <div class="flex items-center px-4 py-2 rounded hover:bg-gray-100">

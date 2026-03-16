@@ -8,6 +8,7 @@ import Employees from '@/pages/Employees.vue'
 import Login from '@/pages/Login.vue'
 import Register from '@/pages/Register.vue'
 import ServiceTeams from '@/pages/ServiceTeams.vue'
+import History from '@/pages/History.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -58,6 +59,11 @@ export default createRouter({
           path: 'service-teams',
           name: 'ServiceTeams',
           component: ServiceTeams,
+        },
+        {
+          path: 'history',
+          name: 'History',
+          component: History,
         },
       ],
     },

@@ -1,8 +1,15 @@
 <template>
   <div>
     <!-- Page Header -->
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">Employees</h2>
+    <div class="flex justify-between items-center pb-6">
+      <div>
+        <h2 class="text-2xl font-bold">Employees</h2>
+        <p class="text-gray-500 text-sm py-1">View employee information and details</p>
+      </div>
+
+      <div class="text-right">
+        <p class="text-lg text-sm text-gray-500">Total Employees: {{ employees.length }}</p>
+      </div>
     </div>
 
     <!-- Table Card -->

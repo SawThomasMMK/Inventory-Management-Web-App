@@ -1,7 +1,8 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-6">
+    <div class="pb-6">
       <h2 class="text-2xl font-bold">Orders</h2>
+      <p class="text-gray-500 text-sm py-1">Manage customer orders and service team assignments</p>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
