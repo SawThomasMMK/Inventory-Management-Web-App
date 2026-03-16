@@ -77,5 +77,7 @@ UI indicators should rely on the API response structure rather than assumed fiel
 See snippet → snippets/service-team-leader-ui.md
 
 Scratch:
-We cant set someone as a teamleader if there is already a leader.
-Team leader selection and changes
+
+- ~~We cant set someone as a teamleader if there is already a leader.~~
+- ~~Team leader selection and changes~~
+- active projects

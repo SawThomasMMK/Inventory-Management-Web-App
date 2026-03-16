@@ -21,8 +21,8 @@
             </h3>
 
             <p class="text-sm text-gray-500">
-              {{ team.members?.length || 0 }} members • {{ team.active_projects ?? 0 }} active
-              projects
+              {{ team.members?.length || 0 }} members •
+              {{ Number(team.active_projects || 0) }} active projects
             </p>
           </div>
 
@@ -45,7 +45,7 @@
             return 0
           })"
           :key="member.id"
-          class="bg-gray-50 rounded-md p-3 flex items-center justify-between"
+          class="bg-gray-50 rounded-md p-3 flex items-center justify-between mb-2"
         >
           <!-- Left -->
           <div class="flex items-center gap-2">
@@ -330,7 +330,11 @@ const saveTeam = async () => {
 
 const editTeam = (team) => {
   editingTeam.value = team
-  teamForm.value.name = team.name
+
+  teamForm.value = {
+    name: team.name,
+    active_projects: team.active_projects || 0,
+  }
 
   showTeamModal.value = true
 }
