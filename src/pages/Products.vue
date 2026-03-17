@@ -101,6 +101,7 @@
     <!-- Delete Confirmation Modal -->
     <ConfirmDelete
       v-model:isOpen="showDeleteModal"
+      title="Delete Product"
       :productName="productToDelete?.name"
       @confirm="confirmDelete"
     />

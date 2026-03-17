@@ -119,6 +119,7 @@
     <!-- Delete Confirmation Modal -->
     <ConfirmDelete
       v-model:isOpen="showDeleteModal"
+      title="Delete Employee"
       :productName="employeeToDelete?.first_name + ' ' + employeeToDelete?.last_name"
       @confirm="confirmDelete"
     />

@@ -185,6 +185,7 @@
     <!-- Delete Team Modal -->
     <ConfirmDelete
       v-model:isOpen="showDeleteModal"
+      title="Delete Service Team"
       :productName="teamToDelete?.name"
       @confirm="confirmDelete"
     />
@@ -193,6 +194,7 @@
 
     <ConfirmDelete
       v-model:isOpen="showDeleteMemberModal"
+      title="Remove Team Member"
       :productName="memberToDelete?.full_name"
       @confirm="confirmDeleteMember"
     />

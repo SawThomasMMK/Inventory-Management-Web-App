@@ -80,6 +80,7 @@
     <!-- Delete Confirmation Modal -->
     <ConfirmDelete
       v-model:isOpen="showDeleteModal"
+      title="Delete Customer"
       :productName="customerToDelete?.name"
       @confirm="confirmDelete"
     />

@@ -185,6 +185,7 @@
     <!-- Delete Team Modal -->
     <ConfirmDelete
       v-model:isOpen="showDeleteModal"
+      title="Delete Service Team"
       :productName="teamToDelete?.name"
       @confirm="confirmDelete"
     />
@@ -193,6 +194,7 @@
 
     <ConfirmDelete
       v-model:isOpen="showDeleteMemberModal"
+      title="Remove Team Member"
       :productName="memberToDelete?.full_name"
       @confirm="confirmDeleteMember"
     />
@@ -247,7 +249,7 @@ const teamForm = ref({
 
 const memberForm = ref({
   employee_id: null,
-  role: '',
+  job_title: '',
   is_leader: false,
 })
 
@@ -389,6 +391,24 @@ const addMember = async () => {
     ? memberForm.value.employee_id
     : team.leader_employee_id
 
+  // 1) sync employee position if set on create
+  if (memberForm.value.job_title) {
+    const selectedEmployee = employees.value.find((e) => e.id === memberForm.value.employee_id)
+    if (selectedEmployee) {
+      await fetch(`${API_BASE_URL}/employees/${selectedEmployee.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...selectedEmployee,
+          job_title: memberForm.value.job_title,
+        }),
+      })
+    }
+  }
+
   await fetch(`${API_BASE_URL}/service-teams/${team.id}`, {
     method: 'PUT',
     headers: {
@@ -397,6 +417,7 @@ const addMember = async () => {
     },
     body: JSON.stringify({
       name: team.name,
+      active_projects: Number(team.active_projects || 0),
       member_ids: memberIds,
       leader_employee_id: leaderId,
     }),
@@ -476,6 +497,7 @@ const updateMember = async () => {
 
     const teamPayload = {
       name: team.name,
+      active_projects: Number(team.active_projects || 0),
       member_ids: team.members.map((m) => m.id),
       leader_employee_id: leaderId,
     }
@@ -523,6 +545,7 @@ const confirmDeleteMember = async () => {
     },
     body: JSON.stringify({
       name: team.name,
+      active_projects: Number(team.active_projects || 0),
       member_ids: updatedMembers,
       leader_employee_id: leaderId,
     }),
