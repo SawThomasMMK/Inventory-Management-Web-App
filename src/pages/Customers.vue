@@ -29,7 +29,7 @@
         </div>
 
         <!-- Table -->
-        <Table :headers="tableHeaders" :data="customers" :loading="loading">
+        <Table :headers="tableHeaders" :data="filteredCustomers" :loading="loading">
           <!-- Actions -->
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-3">
@@ -89,7 +89,7 @@
 <script setup>
 // Imports
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
@@ -104,6 +104,17 @@ const searchQuery = ref('')
 const loading = ref(false)
 
 const customers = ref([])
+
+const filteredCustomers = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return customers.value
+
+  return customers.value.filter((customer) => {
+    const combined =
+      `${customer.name} ${customer.email} ${customer.phone} ${customer.address}`.toLowerCase()
+    return combined.includes(q)
+  })
+})
 
 const showModal = ref(false)
 const editingCustomer = ref(null)

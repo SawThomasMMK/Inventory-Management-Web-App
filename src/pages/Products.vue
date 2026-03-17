@@ -29,7 +29,7 @@
         </div>
 
         <!-- Table -->
-        <Table :headers="tableHeaders" :data="products" :loading="loading">
+        <Table :headers="tableHeaders" :data="filteredProducts" :loading="loading">
           <!-- Image -->
           <template #cell-image="{ value }">
             <img :src="value" alt="Product image" class="w-16 h-16 object-cover rounded" />
@@ -110,7 +110,7 @@
 <script setup>
 // Imports
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
@@ -126,6 +126,16 @@ const searchQuery = ref('')
 const loading = ref(false)
 
 const products = ref([])
+
+const filteredProducts = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return products.value
+
+  return products.value.filter((product) => {
+    const combined = `${product.name} ${product.description} ${product.image_url}`.toLowerCase()
+    return combined.includes(q)
+  })
+})
 
 const showModal = ref(false)
 const editingProduct = ref(null)

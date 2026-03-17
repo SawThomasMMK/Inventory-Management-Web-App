@@ -81,3 +81,8 @@ Scratch:
 - ~~We cant set someone as a teamleader if there is already a leader.~~
 - ~~Team leader selection and changes~~
 - active projects
+
+To Do:
+
+- employee departments
+- mention UI fixes in page layout, search bar and add buttons

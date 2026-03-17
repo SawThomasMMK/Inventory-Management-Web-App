@@ -35,7 +35,7 @@
         </div>
 
         <!-- Table -->
-        <Table :headers="tableHeaders" :data="employees" :loading="loading">
+        <Table :headers="tableHeaders" :data="filteredEmployees" :loading="loading">
           <!-- Actions -->
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-3">
@@ -128,7 +128,7 @@
 <script setup>
 // Imports
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
@@ -144,6 +144,17 @@ const loading = ref(false)
 
 const employees = ref([])
 const serviceTeams = ref([])
+
+const filteredEmployees = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return employees.value
+
+  return employees.value.filter((employee) => {
+    const combined =
+      `${employee.name} ${employee.email} ${employee.phone} ${employee.department} ${employee.job_title} ${employee.status}`.toLowerCase()
+    return combined.includes(q)
+  })
+})
 
 const showModal = ref(false)
 const editingEmployee = ref(null)

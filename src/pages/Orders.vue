@@ -37,14 +37,14 @@
           >
         </div>
 
-        <Table :headers="tableHeaders" :data="orders" :loading="loading" />
+        <Table :headers="tableHeaders" :data="filteredOrders" :loading="loading" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Button from '@/components/Button.vue'
 import Input from '@/components/Input.vue'
 import Table from '@/components/Table.vue'
@@ -54,6 +54,20 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const loading = ref(false)
 const orders = ref([])
+
+const filteredOrders = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  return orders.value.filter((order) => {
+    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
+    if (!matchesStatus) return false
+
+    if (!q) return true
+
+    const combined =
+      `${order.orderNumber} ${order.customer} ${order.date} ${order.total} ${order.status}`.toLowerCase()
+    return combined.includes(q)
+  })
+})
 
 const tableHeaders = [
   { key: 'orderNumber', label: 'Order #' },
