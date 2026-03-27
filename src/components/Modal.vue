@@ -4,10 +4,7 @@
       <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" @click.self="handleClose">
         <div class="flex items-center justify-center min-h-screen px-4">
           <!-- Background -->
-          <div
-            class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-            @click="handleClose"
-          />
+          <div class="fixed inset-0 transition-opacity bg-gray-500/75" @click="handleClose" />
 
           <!-- <span class="hidden sm:inline-block sm:align-middle sm:h-screen"> &#8203; </span> -->
 

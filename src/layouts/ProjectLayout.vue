@@ -12,47 +12,96 @@
       <div class="py-6 px-4 font-bold text-xl">Inventory Manager</div>
 
       <nav class="px-2 space-y-2">
-        <RouterLink to="/dashboard" class="flex items-center px-4 py-2 rounded hover:bg-gray-200">
+        <RouterLink
+          to="/dashboard"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/dashboard'),
+          }"
+        >
           <Squares2X2Icon class="h-5 w-5 mr-2 shrink-0" />
           <span>Dashboard</span>
         </RouterLink>
 
-        <RouterLink to="/products" class="flex items-center px-4 py-2 rounded hover:bg-gray-200">
+        <RouterLink
+          to="/products"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/products'),
+          }"
+        >
           <BriefcaseIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>Products</span>
         </RouterLink>
 
-        <RouterLink to="/orders" class="flex items-center px-4 py-2 rounded hover:bg-gray-200">
+        <RouterLink
+          to="/orders"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/orders'),
+          }"
+        >
           <ShoppingCartIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>Orders</span>
         </RouterLink>
 
-        <RouterLink to="/customers" class="flex items-center px-4 py-2 rounded hover:bg-gray-200">
+        <RouterLink
+          to="/customers"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/customers'),
+          }"
+        >
           <UserCircleIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>Customers</span>
         </RouterLink>
 
-        <RouterLink to="/employees" class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
+        <RouterLink
+          to="/employees"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/employees'),
+          }"
+        >
           <UserIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>Employees</span>
         </RouterLink>
 
         <RouterLink
           to="/service-teams"
-          class="flex items-center px-4 py-2 rounded hover:bg-gray-200"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/service-teams'),
+          }"
         >
           <UserGroupIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>Service Teams</span>
         </RouterLink>
 
-        <RouterLink to="/history" class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
+        <RouterLink
+          to="/history"
+          class="flex items-center px-4 py-2 rounded transition"
+          exact-active-class="bg-blue-100 text-blue-700"
+          :class="{
+            'hover:bg-gray-200': !$route.path.startsWith('/history'),
+          }"
+        >
           <ClockIcon class="h-5 w-5 mr-2 shrink-0" />
           <span>History</span>
         </RouterLink>
 
-        <div class="flex items-center px-4 py-2 rounded hover:bg-gray-100">
+        <div
+          class="flex items-center px-4 py-2 rounded hover:bg-gray-100 cursor-pointer"
+          @click="showLogoutModal = true"
+        >
           <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-2" />
-          <button class="text-red-600" @click="showLogoutModal = true">Logout</button>
+          <span class="text-red-600">Logout</span>
         </div>
       </nav>
     </aside>
