@@ -21,8 +21,7 @@
             </h3>
 
             <p class="text-sm text-gray-500">
-              {{ team.members?.length || 0 }} members •
-              {{ Number(team.active_projects || 0) }} active projects
+              {{ team.employees?.length || 0 }} members
             </p>
           </div>
 
@@ -39,7 +38,7 @@
 
         <!-- Team Members -->
         <div
-          v-for="member in [...team.members].sort((a, b) => {
+          v-for="member in [...(team.employees || [])].sort((a, b) => {
             if (team.leader && a.id === team.leader.id) return -1
             if (team.leader && b.id === team.leader.id) return 1
             return 0
@@ -55,11 +54,11 @@
             />
             <div>
               <p class="font-medium">
-                {{ member.full_name }}
+                {{ member.first_name }} {{ member.last_name }}
               </p>
 
               <p class="text-sm text-gray-500">
-                {{ member.job_title }}
+                {{ member.job_title || 'Team Member' }}
               </p>
             </div>
           </div>
@@ -96,12 +95,15 @@
     <Modal v-model:isOpen="showTeamModal" title="Service Team">
       <Input label="Team Name" v-model="teamForm.name" placeholder="Enter team name" />
 
-      <Input
-        label="Active Projects"
-        type="number"
-        v-model="teamForm.active_projects"
-        placeholder="Number of active projects"
-      />
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Team Leader</label>
+        <select v-model="teamForm.leader_employee_id" class="w-full border rounded-md p-2">
+          <option :value="null">No Leader</option>
+          <option v-for="employee in employees" :key="employee.id" :value="employee.id">
+            {{ employee.first_name }} {{ employee.last_name }}
+          </option>
+        </select>
+      </div>
       <template #footer>
         <div class="flex gap-2 w-full">
           <Button variant="primary" class="w-[80%]" @click="saveTeam"> Save Team </Button>
@@ -120,15 +122,11 @@
           <label class="block text-sm font-medium mb-1"> Select Employee </label>
 
           <select v-model="memberForm.employee_id" class="w-full border rounded-md p-2 mb-2">
+            <option :value="null">Choose an employee</option>
             <option v-for="employee in employees" :key="employee.id" :value="employee.id">
-              {{ employee.full_name }}
+              {{ employee.first_name }} {{ employee.last_name }}
             </option>
           </select>
-          <Input
-            label="Position"
-            v-model="memberForm.job_title"
-            placeholder="Technician, Assistant, Lead..."
-          />
           <div class="flex items-center gap-2">
             <input
               type="checkbox"
@@ -158,11 +156,14 @@
 
     <!-- Edit Member Modal --><Modal v-model:isOpen="showEditMemberModal" title="Edit Team Member">
       <div class="space-y-4">
-        <Input
-          label="Role"
-          v-model="editMemberForm.job_title"
-          placeholder="Technician, Assistant, Lead..."
-        />
+        <div>
+          <p class="text-sm text-gray-600 mb-2">
+            <strong>{{ editingMember?.first_name }} {{ editingMember?.last_name }}</strong>
+          </p>
+          <p class="text-xs text-gray-500 mb-4">
+            Job Title: {{ editingMember?.job_title || 'N/A' }}
+          </p>
+        </div>
 
         <div class="flex items-center gap-2">
           <input type="checkbox" v-model="editMemberForm.is_leader" class="w-4 h-4" />
@@ -236,7 +237,6 @@ const showEditMemberModal = ref(false)
 const editingMember = ref(null)
 
 const editMemberForm = ref({
-  job_title: '',
   is_leader: false,
 })
 
@@ -244,12 +244,11 @@ const editMemberForm = ref({
 
 const teamForm = ref({
   name: '',
-  active_projects: 0,
+  leader_employee_id: null,
 })
 
 const memberForm = ref({
   employee_id: null,
-  job_title: '',
   is_leader: false,
 })
 
@@ -294,7 +293,7 @@ const handleCreateTeam = () => {
   editingTeam.value = null
   teamForm.value = {
     name: '',
-    active_projects: 0,
+    leader_employee_id: null,
   }
 
   showTeamModal.value = true
@@ -319,7 +318,8 @@ const saveTeam = async () => {
     },
     body: JSON.stringify({
       name: teamForm.value.name,
-      active_projects: Number(teamForm.value.active_projects),
+      leader_employee_id: teamForm.value.leader_employee_id,
+      member_ids: editingTeam.value ? editingTeam.value.employees.map(e => e.id) : [],
     }),
   })
 
@@ -335,7 +335,7 @@ const editTeam = (team) => {
 
   teamForm.value = {
     name: team.name,
-    active_projects: team.active_projects || 0,
+    leader_employee_id: team.leader_employee_id || null,
   }
 
   showTeamModal.value = true
@@ -369,11 +369,8 @@ const confirmDelete = async () => {
 
 const openAddMember = (team) => {
   currentTeam.value = team
-  memberForm.value.employee_id = null
-
   memberForm.value = {
     employee_id: null,
-    job_title: '',
     is_leader: false,
   }
 
@@ -385,29 +382,11 @@ const addMember = async () => {
 
   const team = currentTeam.value
 
-  const memberIds = [...(team.members?.map((m) => m.id) || []), memberForm.value.employee_id]
+  const memberIds = [...(team.employees?.map((m) => m.id) || []), memberForm.value.employee_id]
 
   const leaderId = memberForm.value.is_leader
     ? memberForm.value.employee_id
     : team.leader_employee_id
-
-  // 1) sync employee position if set on create
-  if (memberForm.value.job_title) {
-    const selectedEmployee = employees.value.find((e) => e.id === memberForm.value.employee_id)
-    if (selectedEmployee) {
-      await fetch(`${API_BASE_URL}/employees/${selectedEmployee.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...selectedEmployee,
-          job_title: memberForm.value.job_title,
-        }),
-      })
-    }
-  }
 
   await fetch(`${API_BASE_URL}/service-teams/${team.id}`, {
     method: 'PUT',
@@ -417,7 +396,6 @@ const addMember = async () => {
     },
     body: JSON.stringify({
       name: team.name,
-      active_projects: Number(team.active_projects || 0),
       member_ids: memberIds,
       leader_employee_id: leaderId,
     }),
@@ -435,7 +413,6 @@ const editMember = (team, member) => {
   editingMember.value = member
 
   editMemberForm.value = {
-    job_title: member.job_title || '',
     is_leader: team.leader && team.leader.id === member.id,
   }
 
@@ -459,46 +436,16 @@ const updateMember = async () => {
   const member = editingMember.value
 
   try {
-    // 1️⃣ Update employee position
-    const employeePayload = {
-      first_name: member.first_name,
-      last_name: member.last_name,
-      email: member.email,
-      phone: member.phone,
-      job_title: editMemberForm.value.job_title,
-      address: member.address,
-      hired_at: member.hired_at
-        ? member.hired_at.split('T')[0] // ensure YYYY-MM-DD
-        : null,
-      is_active: member.is_active,
-    }
-
-    const empRes = await fetch(`${API_BASE_URL}/employees/${member.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(employeePayload),
-    })
-
-    if (!empRes.ok) {
-      const err = await empRes.json()
-      console.error('Employee update failed:', err)
-      return
-    }
-
-    // 2️⃣ Update leader if needed
+    // Update leader if needed
     const leaderId = editMemberForm.value.is_leader
       ? member.id
       : team.leader && team.leader.id === member.id
         ? null
-        : team.leader?.id
+        : team.leader_employee_id
 
     const teamPayload = {
       name: team.name,
-      active_projects: Number(team.active_projects || 0),
-      member_ids: team.members.map((m) => m.id),
+      member_ids: team.employees.map((m) => m.id),
       leader_employee_id: leaderId,
     }
 
@@ -533,7 +480,7 @@ const confirmDeleteMember = async () => {
   const team = teamForMemberDelete.value
   const member = memberToDelete.value
 
-  const updatedMembers = team.members.filter((m) => m.id !== member.id).map((m) => m.id)
+  const updatedMembers = team.employees.filter((m) => m.id !== member.id).map((m) => m.id)
 
   const leaderId = team.leader_employee_id === member.id ? null : team.leader_employee_id
 
@@ -545,7 +492,6 @@ const confirmDeleteMember = async () => {
     },
     body: JSON.stringify({
       name: team.name,
-      active_projects: Number(team.active_projects || 0),
       member_ids: updatedMembers,
       leader_employee_id: leaderId,
     }),
