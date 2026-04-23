@@ -354,7 +354,7 @@ const saveOrder = async () => {
       ...form.value,
       service_status: form.value.service_required ? form.value.service_status : 'not_required',
     }
-
+    console.log('PAYLOAD:', payload)
     const response = await fetch(`${API_BASE_URL}/orders`, {
       method: 'POST',
       headers: {
@@ -399,6 +399,17 @@ watch(
     } else {
       form.value.service_status = 'pending'
     }
+  },
+)
+
+watch(
+  () => form.value.customer_id,
+  (customerId) => {
+    const selected = customers.value.find((c) => String(c.id) === String(customerId))
+
+    console.log('FOUND CUSTOMER:', selected) // debug
+
+    form.value.order_by = selected?.name || ''
   },
 )
 
