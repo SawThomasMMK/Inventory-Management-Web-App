@@ -145,10 +145,22 @@ Fields:
 - `service_status` (enum: `not_required`, `pending`, `assigned`, `on_field`, `completed`)
 - `service_team_id` (nullable)
 - `handled_by_employee_id` (nullable)
-- `total_amount` (number)
+- `total_amount` (number, auto-calculated from items)
 - `notes` (string)
+- `items` (array of order line items - optional)
 
-Create example:
+Order Items (Line Items):
+
+- `product_id` (required, integer)
+- `quantity` (required, integer, min: 1)
+- `unit_price` (optional, number - if not provided, backend uses product's current price)
+
+Each item object in response includes:
+
+- `id`, `product_id`, `quantity`, `unit_price`, `line_total`
+- `product` (full product object)
+
+Create example with items:
 
 ```json
 {
@@ -161,10 +173,26 @@ Create example:
   "service_status": "assigned",
   "service_team_id": 1,
   "handled_by_employee_id": 2,
-  "total_amount": 500,
-  "notes": "Install on Saturday."
+  "notes": "Install on Saturday.",
+  "items": [
+    {
+      "product_id": 1,
+      "quantity": 2,
+      "unit_price": 99.99
+    },
+    {
+      "product_id": 3,
+      "quantity": 1
+    }
+  ]
 }
 ```
+
+**Important:**
+
+- `total_amount` is optional in request - backend auto-calculates it from items
+- To update order items: send new items array in PUT request, replaces all existing items
+- Leave `items` empty or omit to not modify items on update
 
 Service status meaning:
 
@@ -173,6 +201,47 @@ Service status meaning:
 - `assigned`: team assigned, not yet on the field
 - `on_field`: service team currently on-site
 - `completed`: service completed
+
+Response example:
+
+```json
+{
+  "id": 1,
+  "order_number": "ORD-TEST-001",
+  "status": "processing",
+  "order_date": "2026-02-06",
+  "order_by": "John Reyes",
+  "service_required": true,
+  "service_status": "assigned",
+  "total_amount": "199.98",
+  "notes": "Install on Saturday.",
+  "items": [
+    {
+      "id": 1,
+      "product_id": 1,
+      "quantity": 2,
+      "unit_price": "99.99",
+      "line_total": "199.98",
+      "product": {
+        "id": 1,
+        "name": "Smart TV 55\"",
+        "description": "4K UHD smart television.",
+        "price": "899.99",
+        "quantity": 12
+      }
+    }
+  ],
+  "customer": {
+    /* customer object */
+  },
+  "service_team": {
+    /* service team with leader and members */
+  },
+  "handled_by": {
+    /* employee object */
+  }
+}
+```
 
 ### Customers page
 
