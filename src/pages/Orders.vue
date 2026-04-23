@@ -130,11 +130,47 @@
         </div>
 
         <!-- Products -->
-        <Input label="Products" placeholder="Product 1, Product 2" disabled />
+        <div>
+          <label class="text-sm font-medium">Products</label>
+
+          <div
+            v-for="(item, index) in form.items"
+            :key="index"
+            class="flex gap-2 mt-2 items-center"
+          >
+            <!-- Product -->
+            <select v-model="item.product_id" class="border p-2 rounded w-full">
+              <option disabled value="">Select Product</option>
+              <option v-for="p in products" :key="p.id" :value="p.id">
+                {{ p.name }}
+              </option>
+            </select>
+
+            <!-- Quantity -->
+            <input
+              type="number"
+              v-model.number="item.quantity"
+              min="1"
+              class="border p-2 rounded w-24"
+            />
+
+            <!-- Remove -->
+            <button @click="removeItem(index)" class="text-red-500 px-2 text-lg">×</button>
+          </div>
+
+          <!-- Add Item -->
+          <button @click="addItem" class="mt-2 text-blue-600 text-sm">+ Add Product</button>
+        </div>
 
         <!-- Row 2 -->
         <div class="grid grid-cols-2 gap-4">
-          <Input label="Total ($)" :modelValue="0" disabled />
+          <!-- Price -->
+          <div class="mt-4 flex justify-end">
+            <div class="text-right">
+              <p class="text-sm text-gray-500">Total</p>
+              <p class="text-xl font-semibold">${{ totalAmount.toFixed(2) }}</p>
+            </div>
+          </div>
 
           <select v-model="form.status" class="border p-2 rounded w-full mt-6">
             <option value="processing">Processing</option>
@@ -196,6 +232,16 @@ const customers = ref([])
 
 const showModal = ref(false)
 const errors = ref({})
+const products = ref([])
+
+// Computed Price
+const totalAmount = computed(() => {
+  return form.value.items.reduce((total, item) => {
+    const price = Number(item.unit_price) || 0
+    const qty = Number(item.quantity) || 0
+    return total + price * qty
+  }, 0)
+})
 
 // Form
 const form = ref({
@@ -207,6 +253,14 @@ const form = ref({
   notes: '',
   service_required: false,
   service_status: null,
+
+  items: [
+    {
+      product_id: '',
+      quantity: 1,
+      unit_price: null,
+    },
+  ],
 })
 
 // API
@@ -289,18 +343,48 @@ const loadCustomers = async () => {
   }
 }
 
+// Load Products
+const loadProducts = async () => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`${API_BASE_URL}/products`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await res.json()
+    products.value = data.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const addItem = () => {
+  form.value.items.push({
+    product_id: '',
+    quantity: 1,
+    unit_price: null,
+  })
+}
+
+const removeItem = (index) => {
+  form.value.items.splice(index, 1)
+}
+
 // Format Date
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A'
 
   const date = new Date(dateStr)
 
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+    // hour: '2-digit',
+    // minute: '2-digit',
   })
 }
 
@@ -316,6 +400,13 @@ const handleAddOrder = () => {
 
     service_required: false,
     service_status: null,
+    items: [
+      {
+        product_id: '',
+        quantity: 1,
+        unit_price: null,
+      },
+    ],
   }
 
   showModal.value = true
@@ -338,6 +429,18 @@ const validateForm = () => {
     newErrors.order_date = 'Order date is required'
   }
 
+  if (!form.value.items.length) {
+    alert('At least one product is required')
+    return false
+  }
+
+  for (const item of form.value.items) {
+    if (!item.product_id || item.quantity < 1) {
+      alert('Invalid product item')
+      return false
+    }
+  }
+
   errors.value = newErrors
 
   return Object.keys(newErrors).length === 0
@@ -353,6 +456,7 @@ const saveOrder = async () => {
     const payload = {
       ...form.value,
       service_status: form.value.service_required ? form.value.service_status : 'not_required',
+      items: form.value.items,
     }
     console.log('PAYLOAD:', payload)
     const response = await fetch(`${API_BASE_URL}/orders`, {
@@ -413,9 +517,24 @@ watch(
   },
 )
 
+watch(
+  () => form.value.items.map((item) => item.product_id),
+  (newProductIds) => {
+    form.value.items.forEach((item, index) => {
+      const product = products.value.find((p) => String(p.id) === String(item.product_id))
+
+      if (product) {
+        item.unit_price = Number(product.price)
+      }
+    })
+  },
+  { deep: true },
+)
+
 // Init
 onMounted(() => {
   loadOrders()
   loadCustomers()
+  loadProducts()
 })
 </script>
