@@ -98,7 +98,7 @@
     </div>
 
     <!-- Modal -->
-    <Modal v-model:isOpen="showModal" title="Add Order">
+    <Modal v-model:isOpen="showModal" :title="isEditMode ? 'Edit Order' : 'Add Order'">
       <div class="space-y-4">
         <!-- Row 1 -->
         <div class="grid grid-cols-2 gap-4">
@@ -282,6 +282,8 @@ const employees = ref([])
 const showDeleteModal = ref(false)
 const deleteId = ref(null)
 const deleteName = ref('')
+const isEditMode = ref(false)
+const editingId = ref(null)
 
 // Computed Price
 const totalAmount = computed(() => {
@@ -474,6 +476,10 @@ const formatDate = (dateStr) => {
 
 // Add Order
 const handleAddOrder = () => {
+  // Reset form
+  isEditMode.value = false
+  editingId.value = null
+
   form.value = {
     order_number: '',
     customer_id: '',
@@ -545,19 +551,25 @@ const validateForm = () => {
 
 // Save Order
 const saveOrder = async () => {
-  if (!validateForm()) return
   try {
     const token = localStorage.getItem('token')
 
-    // Business rule
     const payload = {
       ...form.value,
       service_status: form.value.service_required ? form.value.service_status : 'not_required',
       items: form.value.items,
     }
-    console.log('PAYLOAD:', payload)
-    const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: 'POST',
+
+    let url = `${API_BASE_URL}/orders`
+    let method = 'POST'
+
+    if (isEditMode.value) {
+      url = `${API_BASE_URL}/orders/${editingId.value}`
+      method = 'PUT'
+    }
+
+    const res = await fetch(url, {
+      method,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -566,13 +578,15 @@ const saveOrder = async () => {
       body: JSON.stringify(payload),
     })
 
-    if (!response.ok) {
-      const text = await response.text()
-      console.error('SAVE ERROR:', text)
+    if (!res.ok) {
+      console.error(await res.text())
       return
     }
 
     showModal.value = false
+    isEditMode.value = false
+    editingId.value = null
+
     await loadOrders()
   } catch (err) {
     console.error(err)
@@ -609,6 +623,71 @@ const openDeleteModal = (row) => {
   deleteId.value = row.id
 
   deleteName.value = `Order ID: ${row.id}`
+}
+
+// Load Order for Edit
+const loadOrderById = async (id) => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`${API_BASE_URL}/orders/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await res.json()
+
+    return data.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Edit Order
+const handleEditOrder = async (row) => {
+  try {
+    isEditMode.value = true
+    editingId.value = row.id
+
+    const order = await loadOrderById(row.id)
+
+    // IMPORTANT: map items correctly
+    const mappedItems = order.items.map((item) => ({
+      product_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: Number(item.unit_price),
+    }))
+
+    form.value = {
+      order_number: order.order_number,
+      customer_id: order.customer?.id || null,
+      status: order.status,
+      order_date: order.order_date?.split('T')[0],
+      order_by: order.order_by,
+      notes: order.notes || '',
+
+      service_required: order.service_required,
+      service_status: order.service_status,
+
+      service_team_id: order.service_team?.id || null,
+      handled_by_employee_id: order.handled_by?.id || null,
+
+      items: mappedItems.length
+        ? mappedItems
+        : [
+            {
+              product_id: '',
+              quantity: 1,
+              unit_price: null,
+            },
+          ],
+    }
+
+    showModal.value = true
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 // Headers
