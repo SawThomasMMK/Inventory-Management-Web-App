@@ -99,147 +99,193 @@
 
     <!-- Modal -->
     <Modal v-model:isOpen="showModal" :title="isEditMode ? 'Edit Order' : 'Add Order'">
-      <div class="space-y-4">
-        <!-- Row 1 -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <Input label="Order ID" v-model="form.order_number" />
-            <p v-if="errors.order_number" class="text-red-500 text-sm mt-1">
-              {{ errors.order_number }}
-            </p>
-          </div>
-          <div>
-            <Input type="date" label="Order Date" v-model="form.order_date" />
-            <p v-if="errors.order_date" class="text-red-500 text-sm mt-1">
-              {{ errors.order_date }}
-            </p>
+      <div class="space-y-6">
+        <!-- Basic Information Section -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Basic Information</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <Input label="Order ID" v-model="form.order_number" />
+              <p v-if="errors.order_number" class="text-red-500 text-sm mt-1">
+                {{ errors.order_number }}
+              </p>
+            </div>
+            <div>
+              <Input type="date" label="Order Date" v-model="form.order_date" />
+              <p v-if="errors.order_date" class="text-red-500 text-sm mt-1">
+                {{ errors.order_date }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Customer -->
+        <!-- Customer Section -->
         <div>
-          <label class="text-sm font-medium">Customer Name</label>
-          <select v-model="form.customer_id" class="border p-2 rounded w-full mt-1">
-            <option :value="null" disabled>Select Customer</option>
-            <option v-for="c in customers" :key="c.id" :value="c.id">
-              {{ c.name }}
-            </option>
-          </select>
-
-          <p v-if="errors.customer_id" class="text-red-500 text-sm mt-1">
-            {{ errors.customer_id }}
-          </p>
-        </div>
-
-        <!-- Products -->
-        <div>
-          <label class="text-sm font-medium">Products</label>
-
-          <div
-            v-for="(item, index) in form.items"
-            :key="index"
-            class="flex gap-2 mt-2 items-center"
-          >
-            <!-- Product -->
-            <select v-model="item.product_id" class="border p-2 rounded w-full">
-              <option disabled value="">Select Product</option>
-              <option v-for="p in products" :key="p.id" :value="p.id">
-                {{ p.name }}
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Customer</h3>
+          <div>
+            <label class="text-sm font-medium text-gray-700">Customer Name</label>
+            <select
+              v-model="form.customer_id"
+              class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option :value="null" disabled>Select Customer</option>
+              <option v-for="c in customers" :key="c.id" :value="c.id">
+                {{ c.name }}
               </option>
             </select>
-            <p v-if="errors[`item_${index}_product`]" class="text-red-500 text-xs">
-              {{ errors[`item_${index}_product`] }}
+            <p v-if="errors.customer_id" class="text-red-500 text-sm mt-1">
+              {{ errors.customer_id }}
             </p>
-
-            <!-- Quantity -->
-            <input
-              type="number"
-              v-model.number="item.quantity"
-              min="1"
-              class="border p-2 rounded w-24"
-            />
-            <p v-if="errors[`item_${index}_quantity`]" class="text-red-500 text-xs">
-              {{ errors[`item_${index}_quantity`] }}
-            </p>
-
-            <!-- Remove -->
-            <button @click="removeItem(index)" class="text-red-500 px-2 text-lg">×</button>
           </div>
-
-          <!-- Add Item -->
-          <button @click="addItem" class="mt-2 text-blue-600 text-sm">+ Add Product</button>
         </div>
 
-        <!-- Row 2 -->
-        <div class="grid grid-cols-2 gap-4">
-          <!-- Price -->
-          <div class="mt-4 flex justify-end">
-            <div class="text-right">
-              <p class="text-sm text-gray-500">Total</p>
-              <p class="text-xl font-semibold">${{ totalAmount.toFixed(2) }}</p>
+        <!-- Products Section -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Products</h3>
+          <div class="space-y-2">
+            <div v-for="(item, index) in form.items" :key="index" class="flex gap-2 items-end">
+              <!-- Product -->
+              <div class="flex-1">
+                <select
+                  v-model="item.product_id"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option disabled value="">Select Product</option>
+                  <option v-for="p in products" :key="p.id" :value="p.id">
+                    {{ p.name }}
+                  </option>
+                </select>
+                <p v-if="errors[`item_${index}_product`]" class="text-red-500 text-xs mt-1">
+                  {{ errors[`item_${index}_product`] }}
+                </p>
+              </div>
+
+              <!-- Quantity -->
+              <div class="w-20">
+                <input
+                  type="number"
+                  v-model.number="item.quantity"
+                  min="1"
+                  placeholder="Qty"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p v-if="errors[`item_${index}_quantity`]" class="text-red-500 text-xs mt-1">
+                  {{ errors[`item_${index}_quantity`] }}
+                </p>
+              </div>
+
+              <!-- Remove Button -->
+              <button
+                @click="removeItem(index)"
+                class="px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition"
+                title="Remove"
+              >
+                <TrashIcon class="w-5 h-5" />
+              </button>
             </div>
           </div>
 
-          <select v-model="form.status" class="border p-2 rounded w-full mt-6">
-            <option value="processing">Processing</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+          <!-- Add Product Button -->
+          <button
+            @click="addItem"
+            class="mt-3 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-md text-sm font-medium transition flex items-center"
+          >
+            <PlusIcon class="w-4 h-4 mr-1" /> Add Product
+          </button>
         </div>
 
-        <!-- Divider -->
-        <hr />
+        <!-- Order Status Section -->
+        <div class="grid grid-cols-2 gap-4 border-t pt-4">
+          <!-- Total Amount -->
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1">Total Amount</label>
+            <div
+              class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm font-semibold text-gray-900 flex items-center"
+            >
+              ${{ totalAmount.toFixed(2) }}
+            </div>
+          </div>
 
-        <!-- Service Required -->
-        <div class="flex items-center gap-2">
-          <input type="checkbox" v-model="form.service_required" />
-          <span>Service team required</span>
+          <!-- Status -->
+          <div>
+            <label class="text-sm font-medium text-gray-700 block mb-1">Status</label>
+            <select
+              v-model="form.status"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Service Status -->
-        <div v-if="form.service_required">
-          <label class="text-sm font-medium">Service Status</label>
-          <select v-model="form.service_status" class="border p-2 rounded w-full mt-1">
-            <option value="not_required">Not Required</option>
-            <option value="pending">Pending</option>
-            <option value="assigned">Assigned</option>
-            <option value="on_field">On Field</option>
-            <option value="completed">Completed</option>
-          </select>
+        <!-- Service Section -->
+        <div class="border-t pt-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" v-model="form.service_required" class="w-4 h-4 rounded" />
+            <span class="text-sm font-semibold text-gray-700">Service Team Required</span>
+          </label>
+
+          <!-- Service Fields (Conditional) -->
+          <div v-if="form.service_required" class="mt-4 space-y-4 pl-7 border-l-2 border-blue-200">
+            <div>
+              <label class="text-sm font-medium text-gray-700">Service Status</label>
+              <select
+                v-model="form.service_status"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="pending">Pending</option>
+                <option value="assigned">Assigned</option>
+                <option value="on_field">On Field</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium text-gray-700">Service Team</label>
+              <select
+                v-model="form.service_team_id"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option :value="null" disabled>Select Team</option>
+                <option v-for="team in serviceTeams" :key="team.id" :value="team.id">
+                  {{ team.name }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium text-gray-700">Handled By</label>
+              <select
+                v-model="form.handled_by_employee_id"
+                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option :value="null" disabled>Select Employee</option>
+                <option v-for="emp in employees" :key="emp.id" :value="emp.id">
+                  {{ emp.first_name }} {{ emp.last_name }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Service Team -->
-      <div v-if="form.service_required">
-        <label class="text-sm font-medium">Service Team</label>
-        <select v-model="form.service_team_id" class="border p-2 rounded w-full mt-1">
-          <option :value="null" disabled>Select Team</option>
-          <option v-for="team in serviceTeams" :key="team.id" :value="team.id">
-            {{ team.name }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Employee -->
-      <div v-if="form.service_required">
-        <label class="text-sm font-medium">Handled By</label>
-        <select v-model="form.handled_by_employee_id" class="border p-2 rounded w-full mt-1">
-          <option :value="null" disabled>Select Employee</option>
-          <option v-for="emp in employees" :key="emp.id" :value="emp.id">
-            {{ emp.first_name }} {{ emp.last_name }}
-          </option>
-        </select>
-      </div>
-      <!-- Notes -->
-      <div>
-        <label class="text-sm font-medium">Notes</label>
-        <textarea v-model="form.notes" class="border p-2 rounded w-full mt-1" rows="3" />
+        <!-- Notes Section -->
+        <div>
+          <label class="text-sm font-medium text-gray-700 block mb-2">Notes</label>
+          <textarea
+            v-model="form.notes"
+            placeholder="Add any additional notes about this order..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+          />
+        </div>
       </div>
 
       <template #footer>
-        <div class="flex gap-2 w-full">
-          <Button class="w-[80%]" variant="primary" @click="saveOrder"> Save Order </Button>
-          <Button class="w-[20%]" variant="secondary" @click="showModal = false"> Cancel </Button>
+        <div class="w-full flex gap-2">
+          <Button variant="primary" class="w-[80%]" @click="saveOrder"> Save Order </Button>
+          <Button variant="secondary" class="w-[20%]" @click="showModal = false"> Cancel </Button>
         </div>
       </template>
     </Modal>
