@@ -76,6 +76,37 @@ UI indicators should rely on the API response structure rather than assumed fiel
 **Code:**
 See snippet → snippets/service-team-leader-ui.md
 
+## 2026-04-24 — Employee Department Not Displaying
+
+**Problem:**  
+The "Department" column in the Employees table showed empty values (`—`) even though employees were assigned to service teams.
+
+**Fix:**  
+Discovered that the backend returns a single `service_team_id` instead of a `service_teams` relationship array. Updated the frontend mapping logic to resolve the department name by matching `service_team_id` with the preloaded `serviceTeams` list. Also ensured `loadServiceTeams()` is called before `loadEmployees()` to avoid undefined lookups.
+
+**Lesson:**  
+Always verify the actual API response structure before implementing frontend mappings. Incorrect assumptions about relationships (one-to-many vs many-to-many) can cause silent UI issues.
+
+**Code:**  
+→ [View Snippet](snippets/employee-department-fix.md)
+
+---
+
+## 2026-04-24 — Vue Table Scoped Slot Undefined Row Error
+
+**Problem:**  
+Clicking the delete button caused a runtime error:  
+`Cannot read properties of undefined (reading 'id')`
+
+**Fix:**  
+Corrected the table slot syntax by destructuring the `row` object in the scoped slot (`#cell-actions="{ row }"`), ensuring proper access to row data when triggering edit and delete actions.
+
+**Lesson:**  
+Scoped slots in Vue require explicit destructuring of passed props. Failing to do so results in undefined values and runtime errors.
+
+**Code:**  
+→ [View Snippet](snippets/vue-table-slot-fix.md)
+
 Scratch:
 
 - ~~We cant set someone as a teamleader if there is already a leader.~~

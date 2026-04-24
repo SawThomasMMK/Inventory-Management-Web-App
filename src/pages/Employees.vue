@@ -224,9 +224,9 @@ const loadEmployees = async () => {
     employees.value = data.data.map((employee) => ({
       ...employee,
       name: `${employee.first_name} ${employee.last_name}`,
-      department: employee.service_teams
-        ? employee.service_teams.map((team) => team.name).join(', ')
-        : '—',
+      department: employee.service_team_id
+        ? serviceTeams.value.find((t) => t.id === employee.service_team_id)?.name || '—'
+        : 'N/A',
       status: employee.is_active ? 'Active' : 'Inactive',
     }))
     console.log(data.data)
@@ -353,8 +353,8 @@ const handleAddEmployee = () => {
 // Lifecycle
 
 onMounted(() => {
-  loadEmployees()
   loadServiceTeams()
+  loadEmployees()
 })
 </script>
 
