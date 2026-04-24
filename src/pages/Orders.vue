@@ -145,6 +145,9 @@
                 {{ p.name }}
               </option>
             </select>
+            <p v-if="errors[`item_${index}_product`]" class="text-red-500 text-xs">
+              {{ errors[`item_${index}_product`] }}
+            </p>
 
             <!-- Quantity -->
             <input
@@ -153,6 +156,9 @@
               min="1"
               class="border p-2 rounded w-24"
             />
+            <p v-if="errors[`item_${index}_quantity`]" class="text-red-500 text-xs">
+              {{ errors[`item_${index}_quantity`] }}
+            </p>
 
             <!-- Remove -->
             <button @click="removeItem(index)" class="text-red-500 px-2 text-lg">×</button>
@@ -201,6 +207,33 @@
         </div>
       </div>
 
+      <!-- Service Team -->
+      <div v-if="form.service_required">
+        <label class="text-sm font-medium">Service Team</label>
+        <select v-model="form.service_team_id" class="border p-2 rounded w-full mt-1">
+          <option :value="null" disabled>Select Team</option>
+          <option v-for="team in serviceTeams" :key="team.id" :value="team.id">
+            {{ team.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Employee -->
+      <div v-if="form.service_required">
+        <label class="text-sm font-medium">Handled By</label>
+        <select v-model="form.handled_by_employee_id" class="border p-2 rounded w-full mt-1">
+          <option :value="null" disabled>Select Employee</option>
+          <option v-for="emp in employees" :key="emp.id" :value="emp.id">
+            {{ emp.first_name }} {{ emp.last_name }}
+          </option>
+        </select>
+      </div>
+      <!-- Notes -->
+      <div>
+        <label class="text-sm font-medium">Notes</label>
+        <textarea v-model="form.notes" class="border p-2 rounded w-full mt-1" rows="3" />
+      </div>
+
       <template #footer>
         <div class="flex gap-2 w-full">
           <Button class="w-[80%]" variant="primary" @click="saveOrder"> Save Order </Button>
@@ -234,6 +267,9 @@ const showModal = ref(false)
 const errors = ref({})
 const products = ref([])
 
+const serviceTeams = ref([])
+const employees = ref([])
+
 // Computed Price
 const totalAmount = computed(() => {
   return form.value.items.reduce((total, item) => {
@@ -253,6 +289,8 @@ const form = ref({
   notes: '',
   service_required: false,
   service_status: null,
+  service_team_id: null,
+  handled_by_employee_id: null,
 
   items: [
     {
@@ -316,6 +354,9 @@ const loadOrders = async () => {
       service_status: order.service_status,
       products: order.items?.map((item) => item.product?.name) || [],
       service_team: order.service_team?.name || 'N/A',
+      handled_by: order.handled_by
+        ? `${order.handled_by.first_name} ${order.handled_by.last_name}`
+        : 'N/A',
     }))
   } catch (err) {
     console.error(err)
@@ -373,6 +414,30 @@ const removeItem = (index) => {
   form.value.items.splice(index, 1)
 }
 
+// Load Service Teams
+const loadServiceTeams = async () => {
+  const token = localStorage.getItem('token')
+
+  const res = await fetch(`${API_BASE_URL}/service-teams`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json()
+  serviceTeams.value = data.data
+}
+
+// Load Employees
+const loadEmployees = async () => {
+  const token = localStorage.getItem('token')
+
+  const res = await fetch(`${API_BASE_URL}/employees`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+
+  const data = await res.json()
+  employees.value = data.data
+}
+
 // Format Date
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A'
@@ -400,6 +465,9 @@ const handleAddOrder = () => {
 
     service_required: false,
     service_status: null,
+
+    service_team_id: null,
+    handled_by_employee_id: null,
     items: [
       {
         product_id: '',
@@ -413,7 +481,7 @@ const handleAddOrder = () => {
   errors.value = {}
 }
 
-// Order Form Validation
+// Validation
 const validateForm = () => {
   const newErrors = {}
 
@@ -430,17 +498,27 @@ const validateForm = () => {
   }
 
   if (!form.value.items.length) {
-    alert('At least one product is required')
-    return false
+    newErrors.items = 'At least one product is required'
   }
+  if (form.value.service_required) {
+    if (!form.value.service_team_id) {
+      newErrors.service_team_id = 'Select a service team'
+    }
 
-  for (const item of form.value.items) {
-    if (!item.product_id || item.quantity < 1) {
-      alert('Invalid product item')
-      return false
+    if (!form.value.handled_by_employee_id) {
+      newErrors.handled_by_employee_id = 'Select an employee'
     }
   }
 
+  form.value.items.forEach((item, index) => {
+    if (!item.product_id) {
+      newErrors[`item_${index}_product`] = 'Select a product'
+    }
+
+    if (!item.quantity || item.quantity < 1) {
+      newErrors[`item_${index}_quantity`] = 'Invalid quantity'
+    }
+  })
   errors.value = newErrors
 
   return Object.keys(newErrors).length === 0
@@ -492,6 +570,7 @@ const tableHeaders = [
   { key: 'status', label: 'Status' },
   { key: 'service_status', label: 'Service Status' },
   { key: 'service_team', label: 'Service Team' },
+  { key: 'handled_by', label: 'Employee' },
   { key: 'actions', label: 'Actions' },
 ]
 
@@ -536,5 +615,7 @@ onMounted(() => {
   loadOrders()
   loadCustomers()
   loadProducts()
+  loadServiceTeams()
+  loadEmployees()
 })
 </script>
