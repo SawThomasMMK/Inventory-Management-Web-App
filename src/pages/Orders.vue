@@ -143,45 +143,51 @@
         <div>
           <h3 class="text-sm font-semibold text-gray-700 mb-3">Products</h3>
           <div class="space-y-2">
-            <div v-for="(item, index) in form.items" :key="index" class="flex gap-2 items-end">
-              <!-- Product -->
-              <div class="flex-1">
-                <select
-                  v-model="item.product_id"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            <div v-for="(item, index) in form.items" :key="index">
+              <div class="flex gap-2 items-center">
+                <!-- Product -->
+                <div class="flex-1">
+                  <select
+                    v-model="item.product_id"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option disabled value="">Select Product</option>
+                    <option v-for="p in products" :key="p.id" :value="p.id">
+                      {{ p.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Quantity -->
+                <div class="w-20">
+                  <input
+                    type="number"
+                    v-model.number="item.quantity"
+                    min="1"
+                    placeholder="Qty"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <!-- Remove Button -->
+                <button
+                  @click="removeItem(index)"
+                  class="px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition"
+                  title="Remove"
                 >
-                  <option disabled value="">Select Product</option>
-                  <option v-for="p in products" :key="p.id" :value="p.id">
-                    {{ p.name }}
-                  </option>
-                </select>
-                <p v-if="errors[`item_${index}_product`]" class="text-red-500 text-xs mt-1">
-                  {{ errors[`item_${index}_product`] }}
-                </p>
+                  <TrashIcon class="w-5 h-5" />
+                </button>
               </div>
 
-              <!-- Quantity -->
-              <div class="w-20">
-                <input
-                  type="number"
-                  v-model.number="item.quantity"
-                  min="1"
-                  placeholder="Qty"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p v-if="errors[`item_${index}_quantity`]" class="text-red-500 text-xs mt-1">
+              <!-- Error Messages Below -->
+              <div class="mt-1 space-y-1">
+                <p v-if="errors[`item_${index}_product`]" class="text-red-500 text-sm">
+                  {{ errors[`item_${index}_product`] }}
+                </p>
+                <p v-if="errors[`item_${index}_quantity`]" class="text-red-500 text-sm">
                   {{ errors[`item_${index}_quantity`] }}
                 </p>
               </div>
-
-              <!-- Remove Button -->
-              <button
-                @click="removeItem(index)"
-                class="px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition"
-                title="Remove"
-              >
-                <TrashIcon class="w-5 h-5" />
-              </button>
             </div>
           </div>
 
@@ -192,6 +198,11 @@
           >
             <PlusIcon class="w-4 h-4 mr-1" /> Add Product
           </button>
+
+          <!-- Products Error Message -->
+          <p v-if="errors.items" class="text-red-500 text-sm mt-2">
+            {{ errors.items }}
+          </p>
         </div>
 
         <!-- Order Status Section -->
@@ -568,9 +579,9 @@ const validateForm = () => {
     newErrors.order_date = 'Order date is required'
   }
 
-  if (!form.value.items.length) {
-    newErrors.items = 'At least one product is required'
-  }
+  // if (!form.value.items.length || !form.value.items[0].product_id) {
+  //   newErrors.items = 'At least one product is required'
+  // }
   if (form.value.service_required) {
     if (!form.value.service_team_id) {
       newErrors.service_team_id = 'Select a service team'
@@ -597,6 +608,10 @@ const validateForm = () => {
 
 // Save Order
 const saveOrder = async () => {
+  if (!validateForm()) {
+    return
+  }
+
   try {
     const token = localStorage.getItem('token')
 
