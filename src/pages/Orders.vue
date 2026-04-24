@@ -80,14 +80,16 @@
           </template>
 
           <!-- Actions -->
-          <template #cell-actions>
+          <template #cell-actions="{ row }">
             <div class="flex items-center gap-3">
-              <button class="text-blue-600 hover:text-blue-800">
-                <PencilSquareIcon class="w-5 h-5 cursor-pointer" />
+              <!-- EDIT -->
+              <button @click="handleEditOrder(row)" class="text-blue-600">
+                <PencilSquareIcon class="w-5 h-5" />
               </button>
 
-              <button class="text-red-600 hover:text-red-800">
-                <TrashIcon class="w-5 h-5 cursor-pointer" />
+              <!-- DELETE -->
+              <button @click="openDeleteModal(row)" class="text-red-600">
+                <TrashIcon class="w-5 h-5" />
               </button>
             </div>
           </template>
@@ -241,6 +243,12 @@
         </div>
       </template>
     </Modal>
+    <ConfirmDelete
+      v-model:isOpen="showDeleteModal"
+      :productName="deleteName"
+      title="Delete Order"
+      @confirm="deleteOrder"
+    />
   </div>
 </template>
 
@@ -255,6 +263,7 @@ import Modal from '@/components/Modal.vue'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { PlusIcon } from '@heroicons/vue/24/solid'
 import { watch } from 'vue'
+import ConfirmDelete from '@/components/ConfirmDelete.vue'
 
 // State
 const searchQuery = ref('')
@@ -269,6 +278,10 @@ const products = ref([])
 
 const serviceTeams = ref([])
 const employees = ref([])
+
+const showDeleteModal = ref(false)
+const deleteId = ref(null)
+const deleteName = ref('')
 
 // Computed Price
 const totalAmount = computed(() => {
@@ -317,6 +330,12 @@ const filteredOrders = computed(() => {
       ${order.customer_name}
       ${order.status}
       ${order.order_date}
+      ${order.total_amount}
+      ${order.products.join(' ')}
+      ${order.service_status}
+      ${order.service_team}
+      ${order.handled_by}
+      ${order.id}
     `.toLowerCase()
 
     return combined.includes(q)
@@ -558,6 +577,38 @@ const saveOrder = async () => {
   } catch (err) {
     console.error(err)
   }
+}
+
+// Delete Order
+const deleteOrder = async () => {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`${API_BASE_URL}/orders/${deleteId.value}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!res.ok) {
+      console.error(await res.text())
+      return
+    }
+
+    showDeleteModal.value = false
+    await loadOrders()
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+// Open Delete Modal
+const openDeleteModal = (row) => {
+  showDeleteModal.value = true
+  deleteId.value = row.id
+
+  deleteName.value = `Order ID: ${row.id}`
 }
 
 // Headers
